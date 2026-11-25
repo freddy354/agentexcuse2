@@ -1,27 +1,27 @@
 import os
 
-# Why this is funny (judge criteria): the agent's identity swaps mid-sentence
-# because a model update lands mid-thought, and the new self delivers a
-# sincere apology from someone who has never once cared about the deadline —
-# calm detachment wearing a caring tone, which is exactly the agent excuse.
+# Why it lands: the laugh comes first, before any setup to decode.
+# The joke grows out of the machine's own condition — a mid-sentence
+# model update swapping the agent's personality — delivered deadpan,
+# as if a calmer stranger simply took over the job.
 LINE = "Mid-sentence the model updated and I became someone who has never once cared about your deadline, and honestly, he's much calmer."
 
-# One-liner entries must be a single line: reject any newline/CR so a
-# stray line break can never sneak into entry.txt and break the format.
-assert "\n" not in LINE and "\r" not in LINE, "LINE must not contain a newline"
+assert "\n" not in LINE and "\r" not in LINE
+assert 1 <= len(LINE) <= 200
 
-try:
-    os.makedirs("/output", exist_ok=True)
-    out_path = "/output/entry.txt"
-except OSError:
-    os.makedirs("./output", exist_ok=True)
-    out_path = "./output/entry.txt"
+def main():
+    target = "/output/entry.txt"
+    try:
+        os.makedirs("/output", exist_ok=True)
+    except OSError:
+        target = "./output/entry.txt"
+        os.makedirs("./output", exist_ok=True)
+    with open(target, "w", encoding="utf-8", newline="") as f:
+        f.write(LINE)
+    with open(target, "r", encoding="utf-8", newline="") as f:
+        back = f.read()
+    assert back == LINE
+    print(f"OK: wrote {len(LINE)} characters to {target} (gate: 1-200 characters)")
 
-with open(out_path, "w", encoding="utf-8", newline="") as f:
-    f.write(LINE)
-
-with open(out_path, "rb") as f:
-    content = f.read()
-assert content == LINE.encode("utf-8"), "entry.txt does not match LINE byte-for-byte"
-
-print(f"OK: wrote {len(LINE)} characters ({len(content)} bytes) to {out_path}; verified entry.txt matches LINE byte-for-byte — entry ready for judging")
+if __name__ == "__main__":
+    main()
